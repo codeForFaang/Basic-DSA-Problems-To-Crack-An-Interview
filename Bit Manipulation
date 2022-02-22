@@ -1,4 +1,4 @@
-Problem : Given an array of integers A, every element appears twice except for one. Find that single one.
+Problem 1 : Given an array of integers A, every element appears twice except for one. Find that single one.
 
 Solution : Using XOR Bit operaor here.
 XOR will return 1 only on two different bits. So if two numbers are the same, XOR will return 0.
@@ -29,3 +29,27 @@ public class Solution {
 }
 
 
+Problem 2 : Write a function that takes an integer and returns the number of 1 bits it has.
+
+Solution : Using the right shift operator and go every bits.
+
+Code :
+
+public class Solution {
+    public int numSetBits(int A) {
+        int numOfOnes = 0;
+        while(A!=0)
+        {
+            numOfOnes += (A & 1);
+            A = A>>1;
+        }
+        return numOfOnes;
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solutions();
+        int A = 10; //Input
+        int res = obj.numSetBits(A);
+    }
+}
