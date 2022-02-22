@@ -1,0 +1,99 @@
+Problem 1 : Given 2 non negative integers A and B, find gcd(A, B)
+GCD of 2 integers A and B is defined as the greatest integer g such that g is a divisor of both A and B. Both A and B fit in a 32 bit signed integer.
+
+Solution : 
+Lets say g is gcd(m, n) and m > n.
+m = g * m1
+n = g * m2
+m - n = g * (m1 - m2)
+gcd (m, n) = gcd(m-n, n)
+           = gcd(m - 2n, n) if m >= 2n
+           = gcd(m - 3n, n) if m >= 3n 
+             .
+             .
+             .
+           = gcd(m - k*n, n) if m >= k*n
+In other words, we keep subtracting n till the result is greater than 0. Ultimately we will end up with m % n.       
+So gcd(m, n)  = gcd(m % n, n) 
+
+Code ;
+
+public class Solution {
+    public int gcd(int A, int B) {
+        
+        // Using Euclidian's method. Basically we are considering B < A. 
+        // Incase A < B then the gcd(A,B) will become gcd(B,A) in line 8
+        if (B==0)
+            return A;
+        return gcd(B,A%B);
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        int A = 15;
+        int B = 9;
+        int res = obj.gcd(A,B);
+    }
+}
+
+Problem 2 : Given an array of integers A of size N containing GCD of every possible pair of elements of another array.
+Find and return the original numbers which are used to calculate the GCD array in any order. For example, if original numbers are {2, 8, 10} then the given array will be {2, 2, 2, 2, 8, 2, 2, 2, 10}.
+
+Solution : Sort the array in decreasing order.
+Highest element will always be one of the original numbers. Keep that number and remove it from the array.
+Compute GCD of the element taken in the previous step with the current element starting from the greatest and discard the GCD value from the given array.
+
+Code :
+
+public class Solution {
+    public int[] solve(int[] A) {
+        int size = A.length;
+        int resSize = (int)Math.sqrt(size);
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        
+        for(int i = 0; i < size; i++)
+        {
+            arr.add(A[i]);
+        }
+        
+        Collections.sort(arr);
+        
+        int res[] = new int[resSize];
+        int index=0;
+        while(resSize>0)
+        {
+            int s = arr.size();
+            int nxt = arr.get(s-1);
+            //remove that number from arr and also remove its gcd with other values added before from the arr.
+            arr.remove(new Integer(nxt));
+            removePairGcd(nxt,res,arr);
+            res[index++] = nxt;
+            resSize--;  
+        }
+        return res;
+    }
+    
+    void removePairGcd(int nxt, int[] res, ArrayList<Integer> arr)
+    {
+        for(int i = 0; i < res.length && res[i] !=0; i++)
+        {
+            arr.remove(new Integer(gcd(nxt,res[i])));
+            arr.remove(new Integer(gcd(nxt,res[i]))); // Done twice as GCD pairs of (5,10) and also (10,5) have 2 different entries in the array.
+        }
+    }
+    
+    int gcd(int A, int B)
+    {
+        if (B==0)
+            return A;
+        return gcd(B,A%B);
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        int A[] = {}; //Input
+        int res = obj.solve(A);
+    }
+}
