@@ -1,0 +1,95 @@
+Problem 1 : Given three integers A, B and C, where A represents n, B represents r and C represents m, find and return the value of nCr % m where nCr % m = (n!/((n-r)!*r!))% m.
+x! means factorial of x i.e. x! = 1 * 2 * 3... * x.
+
+Solution : If we calculate nCr by calculating factorial of each number and then doing n! / (r! * (n-r)!) % m. This will not work as the factorial can be very large and will cause overflow.
+As we know nCr = n-1Cr-1 + n-1Cr.
+So we will use Dynamic Programming approach and calculate the value of nCr.
+
+Code :
+
+public class Solution {
+    public int solve(int A, int B, int C) {
+        //pascal triangle
+        int[][] dp = new int[A + 1][B + 1];
+        for(int i = 0; i <= A; i++) {
+            for(int j = 0; j <= Math.min(i, B); j++) {
+                if(j == i || j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = (dp[i - 1][j - 1] % C + dp[i - 1][j] % C) % C;
+                }
+            }
+        }
+        return dp[A][B] % C;
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        int n = 15;
+        int r = 5;
+        int m = 7;
+        int res = obj.solve(n,r,m);
+    }
+}
+
+Problem 2 : Given a string A. Find the rank of the string amongst its permutations sorted lexicographically.
+Assume that no characters are repeated.
+Note: The answer might not fit in an integer, so return your answer % 1000003
+
+Solution : Lets start by looking at the first character.
+If the first character is X, all permutations which had the first character less than X would come before this permutation when sorted lexicographically.
+Number of permutation with a character C as the first character = number of permutation possible with remaining N-1 character = (N-1)!
+Then the problem reduces to finding the rank of the permutation after removing the first character from the set.
+Hence,
+rank = number of characters less than first character * (N-1)! + rank of permutation of string with the first character removed
+
+Code :
+
+public class Solution {
+    public int findRank(String A) {
+        long res = 1;
+        int size = A.length();
+        if (size == 1)
+            return (int)res%1000003;
+        
+        int index = 0;
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        while (index < size)
+        {
+            arr.add((int)A.charAt(index));
+            index++;
+        }
+        
+        Collections.sort(arr);
+        
+        index = 0;
+        int ch;
+        int pos;
+        while (index < size)
+        {
+            ch = (int)A.charAt(index);
+            pos = arr.indexOf(ch);
+            arr.remove(new Integer(ch));
+            res = res%1000003 + (pos * fact(size-(index+1)));
+            index++;
+        }
+
+        return (int)res%1000003;
+    }
+    
+    long fact (int N)
+    {
+        if (N == 0)
+            return 1;
+            
+        return (N * fact(N-1))%1000003;
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        String A = "cbade"
+        int res = obj.solve(A);
+    }
+}
