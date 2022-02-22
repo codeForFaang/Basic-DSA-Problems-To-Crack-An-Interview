@@ -1,0 +1,117 @@
+Problem 1 : Given two Integers A, B. You have to calculate (A ^ (B!)) % (1e9 + 7).
+"^" means power ,
+"%" means "mod", and
+"!" means factorial.
+
+Solution : This Problem is very simple if you know Fermat’s Little Theorem.
+Basic Approch to solve this problem is to find factorial of B by taking mod with (P-1), here P is a prime. In this problem 100000007 is also a prime.
+After calculating factorial of B, you can calculate A ^ B!, by simply taking mod with P.
+
+Code :
+
+public class Solution {
+    public int solve(int A, int B) {
+        
+        int m = 1000000007;
+        /* Let A = 2, B = 5
+        A ^ B! % m = ((((A^5%m)^4%m)^3%m)^2%m)^1%m  > This is not optimal. 
+        
+        Using Fermat's Theorm (Optimal): A^p = A mod p if p is prime.
+        Further modifying this we get  A^p-1 = 1 mod p = 1
+        A^B! % p we have to find: 
+        A^B! can be very large and so we can split it like this A^(p-1) . A^(p-1) .A^(p-1) ...  A^(x)
+        where x = B! % p   (A^p-1 =1 so we can ignore that)
+        Hence A^B! % p = A^x % p
+        */
+        
+        /*
+        My Initial non optimal solution
+        long iPowMod = pow(A,B,m);
+        for (int i = B-1; i > 0; i--)
+        {
+            iPowMod = pow(iPowMod,i,m);
+        }
+        
+        return (int)iPowMod;
+        */
+        
+        long x = factModp((long)B,(long)(m-1));
+        int res = (int)pow(A,x,m);
+        return res;
+    }
+    
+    long factModp(long B, long m)
+    {
+        if (B == 1)
+            return (long)1;
+        else
+            return (long)(B % m * factModp(B-1,m)) % m;
+    }
+    
+    public long pow(long A, long B, int m)
+    {
+        if (B == 0)
+            return (long)1;
+            
+        if(A > m)
+            return pow(A%m,B,m);
+        else
+        {
+            if (B % 2 == 0)
+                return pow(A*A,B/2,m);
+            else
+                return (long)(A*pow(A*A,((B-1)/2),m))%m;
+        }
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        int A = 10;
+        int B = 3;
+        int res = obj.solve(A,B);
+    }
+}
+
+Problem 2 : Prime Modulo Inverse.
+Given two integers A and B. Find the value of A-1 mod B where B is a prime number and gcd(A, B) = 1.
+A-1 mod B is also known as modular multiplicative inverse of A under modulo B.
+
+Solution : Fermats’s little theorem:
+AB-1 ≡ 1 (mod B) where B is prime and A is not a multiple of B.
+Multiply by A-1 on both sides, We get
+AB-2 ≡ A-1 (mod B) where B is prime and A is not a multiple of B.
+We just have to calculate AB-2 (mod B). This will be the modular multiplicative inverse of A under modulo B.
+
+Code :
+
+public class Solution {
+    public int solve(int A, int B){
+    
+    return (int)pow((long)A,(long)B-2,B); //Fermet's Theorm A^-1 % B = A^(B-2) % B
+    
+    }
+    
+    public long pow(long A, long B, int m)
+    {
+        if (B == 0)
+            return 1;
+        if (A > m)
+            return pow(A%m,B,m);
+        else
+        {
+            if(B % 2 == 0)
+                return pow(A*A,B/2,m);
+            else
+                return (long)(A * pow(A*A,((B-1)/2),m))%m;
+        }
+    }
+    
+    public static void main(String args[])
+    {
+        Solution obj = new Solution();
+        int A = 122;
+        int B = 7;
+        int res = obj.solve(A,B);
+    }
+}
